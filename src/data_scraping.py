@@ -56,6 +56,6 @@ async def main(nums):
 results = asyncio.run(main([i for i in range(1, 20000)]))
 clean_data = [res for res in results if res]
 df = pd.DataFrame(clean_data)
-df.to_csv("histories.csv", sep=";", index=False, encoding="utf-8")
+df.to_csv("../data/histories.csv", sep=";", index=False, encoding="utf-8")
 
 print(df)
