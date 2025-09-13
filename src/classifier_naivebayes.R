@@ -71,3 +71,20 @@ prediccion_metricas(T, 0)
 
 ## Laplace smoothing
 prediccion_metricas(T, 0.1)
+
+# Mejor valor de alpha para Laplace smoothing
+
+## Probar múltiples valores
+for (alpha in c(0.05, 0.1, 0.3, 0.7, 1, 5, 10, 50, 100)) {
+  cat("\nLaplace smoothing con alpha=", alpha, "\n", sep="")
+  NB_cl = naive_bayes(select(training, -c(h_type, title_info)),
+                      training$h_type,
+                      usepoisson=T,
+                      laplace=alpha)
+  pred = predict(NB_cl, select(testing, -c(h_type, title_info)))
+  cm = table(pred, testing$h_type)
+  accuracy = sum(diag(cm)) / sum(cm)
+  cat("Accuracy: ", accuracy, "\n", sep="")
+}
+
+prediccion_metricas(T, 1)
