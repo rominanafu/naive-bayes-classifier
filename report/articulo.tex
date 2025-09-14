@@ -24,6 +24,8 @@
 \maketitle
 \section*{Abstract}
 
+El internet alberga millones de relatos personales sobre experiencias paranormales, los cuales ofrecen una rica fuente de datos sobre percepciones individuales y creencias colectivas. Este artículo busca aplicar técnicas de Procesamiento de Lenguaje Natural (NLP) para categorizar estas narrativas, utilizando un clasificador Naïve Bayes para diferenciar los relatos del género "Haunted Places" del resto. La metodología consistió en la extracción de datos mediante web scraping del sitio "Your Ghost Story", la transformación del texto a una representación numérica (count vectorizer) y el entrenamiento de cuatro modelos Naïve Bayes distintos. Los resultados muestran que los modelos iniciales fueron ineficaces, clasificando todas las observaciones en una sola categoría. Sin embargo, al ajustar el modelo para asumir una distribución de Poisson en las frecuencias de palabras y aplicar un suavizado de Laplace (con $\alpha=1$), se obtuvo el mejor rendimiento, alcanzando una exactitud del $73.39\%$ y un F1-score de $0.6116$. Se concluye que un clasificador Naïve Bayes, debidamente ajustado a las características de los datos textuales, es una herramienta eficaz para categorizar este tipo de narrativas no convencionales.
+\\
 \section*{Introducción}
 
 El internet se ha convertido en un espacio para millones de personas que comparten experiencias personales relacionadas con lo paranormal, como avistamientos de ovnis, encuentros de fantasmas, entre otros. Estos testimonios, aparte del carácter anecdótico, representan fuentes con amplias descripciones textuales contenientes de la percepción individual y creencias colectivas de lo inexplicable. En estos casos, la variedad de fenómenos reportados y ambigüedad del lenguaje dificultan la clasificación sistemática de estos relatos.
@@ -230,6 +232,22 @@ Las métricas de los 4 modelos se ven condensadas en la Tabla \ref{tab:metricas}
 
 \section*{Conclusión}
 
+La ambigüedad del lenguaje y la diversidad de los fenómenos hacen difícil la clasificación sistemática de los relatos, para abordarlo, se construyó un clasificador de Naïve Bayes y técnicas de procesamiento de lenguaje natural.
+\\
+
+Las implementaciones iniciales resultaron inadecuadas, ya que clasificaron incorrectamente todas las narrativas en una sola categoría ("Haunted Places"). Esto significó un rendimiento general deficiente, con una exactitud de solo $30.27\%$ y un recall engañoso de $100\%$.
+\\
+
+Notamos una mejora cuando cambiamos el modelo a dejar de asumir normalidad y usar la distribución de Poisson (accuracy de $68.74\%$ y F1-score de $59.60\%$). Mejorar y cambiar estos supuestos marcaron un buen desempeño, y todavía implementando la técnica de suavizamiento de Laplace, con un parámetro $\alpha=1$, se obtuvo el mejor modelo, con accuracy del $73.39\%$ y un F1-score de $0.6116$. 
+\\
+
+El proceso de construir este clasificador permite comprender algo esencial que muchas veces se pasa por alto, y es que no basta con realizar un preprocesamiento básico de los datos, entrenar un modelo inicial y proceder a interpretarlo. Es fundamental analizar la naturaleza de los datos y su comportamiento para poder ajustar el modelo de manera adecuada, con lo cual, los resultados pueden acercarse más a lo deseado.
+\\
+
+En este artículo, esto se evidenció claramente. Los primeros modelos mostraron limitaciones serias al clasificar todos los relatos en una sola categoría. Fue solo al replantear la distribución de las variables y aplicar técnicas como la asunción de Poisson y el Laplace Smoothing que se logró mejorar sustancialmente el desempeño, alcanzando métricas mucho más equilibradas y útiles.
+\\
+
+La revisión constante de los resultados y la naturaleza de los datos es tan relevante como el modelo mismo.
 %% Referencias
 \printbibliography[title={Referencias}]
 
