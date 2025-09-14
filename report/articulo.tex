@@ -1,0 +1,179 @@
+\documentclass[12pt, letterpaper]{report}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+\usepackage[figurename=Figura]{caption}
+\usepackage[tablename=Tabla]{caption}
+\usepackage{indentfirst}
+\usepackage{diagbox}
+\usepackage{biblatex}
+\addbibresource{bibliografia.bib}
+
+\title{Clasificador Naïve Bayes: Una categorización de relatos de fenómenos paranormales.}
+\author{ Romina Nájera Fuentes - A01424411 \\ Humberto Mondragón García - A01711912 \\ Juan Braulio Olivares Rodríguez - A01706880 \\ Edgar Andrey Balvaneda - A01644770
+ \\ \\ Análisis de métodos de razonamiento e incertidumbre}
+\date{14 de Septiembre, 2025}
+
+
+\begin{document}
+\maketitle
+\section*{Abstract}
+
+\section*{Introducción}
+
+\section*{Metodología}
+
+\section*{Aplicación}
+
+El primer clasificador Naïve Bayes se entrenó con la librería e1071. Sin especificar algún parámetro, el modelo clasificó a las $902$ observaciones del conjunto de prueba como \textit{Haunted Places}, con lo cual se genera la matriz de confusión de la Tabla \ref{cm:modelo1}.
+\\
+
+A partir de esta matriz de confusión, el modelo se mide en las 4 métricas establecidas en la metodología. Se tiene un accuracy de $0.3027$, una precisión de $0.3027$, un recall de $1$, y un F1-score de $0.4647$. El accuracy que menos de la mitad de las predicciones son correctamente clasificadas, la precisión muestra que solo el $30.27\%$ de las predicciones de \textit{Haunted Places} fueron verdaderamente de dicha categoría, aunque el recall indica que todos los relatos de \textit{Haunted Places} fueron clasificados correctamente. El F1-score, que combina tanto a la precisión como al recall, indica que el modelo tiene un rendimiento como del $46.47\%$, que indica que se tiene una precisión y recall media. Con estas métricas, se puede esperar que el modelo siempre clasifique correctamente los relatos de \textit{Haunted Places}, pero que clasifique erróneamente a todos los relatos que no son de este género.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+        \diagbox[innerwidth=4cm, height=2.3\line]{\textbf{Predicción}}{\textbf{Real}} & Haunted Places & Non Haunted Places \\
+        \hline
+        Haunted Places & 273 & 629 \\
+        \hline
+        Non Haunted Places & 0 & 0 \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de confusión del modelo 1.}
+    \label{cm:modelo1}
+\end{table}
+
+Posteriormente, se generó un clasificador con la librería naivebayes, el cual generó el mismo resultado del clasificador anterior, categorizando a todos los relatos de prueba como \textit{Haunted Places} únicamente. La matriz de confusión es la misma, que se encuentra en la Tabla \ref{cm:modelo2}, resulta siendo la misma que la del modelo anterior.
+\\
+
+Las métricas obtenidas para el segundo modelo son las mismas que en el primer modelo. Se tiene un accuracy de $0.3027$, una precisión de $0.3027$, un recall de $1$, y un F1-score de $0.4647$. La interpretación de estas métricas es la misma que en el modelo anterior, llevando a cabo una clasificación perfecta en todos los relatos con categoría \textit{Haunted Places} y erróneamente a todos los relatos fuera de esta categoría, puesto que todas las observaciones se clasifican en una sola categoría.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+        \diagbox[innerwidth=4cm, height=2.3\line]{\textbf{Predicción}}{\textbf{Real}} & Haunted Places & Non Haunted Places \\
+        \hline
+        Haunted Places & 273 & 629 \\
+        \hline
+        Non Haunted Places & 0 & 0 \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de confusión del modelo 2.}
+    \label{cm:modelo2}
+\end{table}
+
+Los primeros dos modelos, aún cuando son ajustados por librerías distintas, muestran un resultado consistente en el set de prueba. Sin embargo, ambos clasifican a todos los relatos como \textit{Haunted Places}, lo cual no está mostrando métricas muy favorables. Esto podría deberse al supuesto de normalidad de las variables continuas.
+\\
+
+El tercer modelo, a diferencia de los dos anteriores, deja de asumir una distribución normal para las variables numéricas. En lugar de ello, genera el modelo asumiendo una distribución de Poisson. Con este ajuste, la clasificación de las observaciones de prueba ya no solamente es en Haunted Places, sino que también se clasifican en \textit{Non Haunted Places}. Dichas predicciones generan la matriz de confusión de la Tabla \ref{cm:modelo3}.
+\\
+
+Utilizando la matriz de confusión, se calculan las 4 métricas del tercer modelo. Este tiene un accuracy de $0.6874$, una precisión de $0.4894$, un recall de $0.7619$ y un F1-score de $0.5960$. Esto refleja una tasa de $0.6874$ predicciones correctas del modelo, mientras que casi la mitad de las predicciones de relatos catalogados como \textit{Haunted Places} fueron correctamente clasificados, y la otra mitad fue incorrectamente clasificada. La proporción de casos positivos reales identificados fue alta, de $0.7619$, y el score que pondera tanto a la precisión como al recall, tiene un valor de casi $0.6$, que no es tan alto pero tiende a indicar un buen modelo que a uno malo.
+\\
+
+Se puede observar que fuera del recall, las demás métricas mejoran en comparación con los modelos 1 y 2, ya que no todas las observaciones son clasificadas en una sola categoría, por lo que se podría decir que el modelo tiene un mejor ajuste al asumir una distribución de Poisson para las características numéricas.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+        \diagbox[innerwidth=4cm, height=2.3\line]{\textbf{Predicción}}{\textbf{Real}} & Haunted Places & Non Haunted Places \\
+        \hline
+        Haunted Places & 208 & 217 \\
+        \hline
+        Non Haunted Places & 65 & 412 \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de confusión del modelo 3.}
+    \label{cm:modelo3}
+\end{table}
+
+En vista de que existen muchos ceros en los datos de entrada del clasificador, algunas de las probabilidades son 0, lo cual afecta en la predicción. Es por ello que utilizar el suavizamiento de Laplace, descrito anteriormente, podría representar una mejora en el modelo.
+\\
+
+Para escoger el parámetro de $\alpha$ para este suavizamiento, se simularon múltiples clasificadores, manteniendo el supuesto de distribución Poisson para variables numéricas, con lo cual se comparó la métrica de accuracy utilizando el set de datos de prueba. En la Tabla \ref{tab:laplace} se pueden observar los valores de $\alpha$ probados, así como las medidas de accuracy obtenidas, con lo cual se escogió maximizar el accuracy, lo cual sucede con $\alpha=1$ de este subconjunto de parámetros.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+        $\alpha$ & \textbf{Accuracy} \\
+        \hline
+        0.05 & 0.7217295 \\
+        \hline
+        0.1 & 0.7250554 \\
+        \hline
+        0.3 & 0.7272727 \\
+        \hline
+        0.7 & 0.7283814 \\
+        \hline
+        1 & 0.7339246 \\
+        \hline
+        5 & 0.7272727 \\
+        \hline
+        10 & 0.7084257 \\
+        \hline
+        50 & 0.6940133 \\
+        \hline
+        100 & 0.695122 \\
+        \hline
+    \end{tabular}
+    \caption{Comparación de $\alpha$ para Laplace smoothing.}
+    \label{tab:laplace}
+\end{table}
+
+Utilizando el parámetro $\alpha=1$, se generó entonces el cuarto clasificador, cuya matriz de confusión se muestra en la Tabla \ref{cm:modelo4}. Con este cuarto modelo, se tiene un accuracy de $0.7339$, una precisión de $0.5478$, un recall de $0.6923$ y un F1-score de $0.6116$. La tasa de clasificaciones correctas es del $0.73$, que se considera un accuracy alto ya que más del $70\%$ de los datos se clasifica correctamente. La precisión indica que más de la mitad de los relatos categorizados como \textit{Haunted Places} es clasificado correctamente, y el recall muestra que el modelo es bueno identificando los relatos de \textit{Haunted Places}.
+\\
+
+Una observación de añadir este parámetro de suavizamiento al clasificador es que los $\alpha$ probados mejoraron todos el accuracy del modelo, en comparación al tercer clasificador, el cual no contaba con suavizamiento. Sin embargo, aún cuando el accuracy mejoró, el recall disminuyó significativamente, mostrando que se clasificaron menos relatos correctamente como \textit{Haunted Places}. A pesar de esta disminución, el aumento de la precisión permitió que el F1-score aumentara también, indicando que el rendimiento del modelo es mejor con el uso del suavizamiento a cuando no se utiliza.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+        \diagbox[innerwidth=4cm, height=2.3\line]{\textbf{Predicción}}{\textbf{Real}} & Haunted Places & Non Haunted Places \\
+        \hline
+        Haunted Places & 189 & 156 \\
+        \hline
+        Non Haunted Places & 84 & 473 \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de confusión del modelo 4.}
+    \label{cm:modelo4}
+\end{table}
+
+Las métricas de los 4 modelos se ven condensadas en la Tabla \ref{tab:metricas}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} \\
+        \hline
+        Modelo 1 & 0.3027 & 0.3027 & 1 & 0.4647 \\
+        \hline
+        Modelo 2 & 0.3027 & 0.3027 & 1 & 0.4647 \\
+        \hline
+        Modelo 3 & 0.6874 & 0.4894 & 0.7619 & 0.5960 \\
+        \hline
+        Modelo 4 & 0.7339 & 0.5478 & 0.6923 & 0.6116 \\
+        \hline
+    \end{tabular}
+    \caption{Métricas de las matrices de confusión.}
+    \label{tab:metricas}
+\end{table}
+
+\section*{Conclusión}
+
+%% Referencias
+\printbibliography[title={Referencias}]
+
+\end{document}
