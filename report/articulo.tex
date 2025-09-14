@@ -28,6 +28,51 @@
 
 \section*{Metodología}
 
+Dado que el texto no es directamente interpretable por los algoritmos a utilizar, se requiere transformarlo en una representación numérica. Para esto, se utilizará un proceso conocido como count vectorizer, que genera una matriz de frecuencia de términos, donde cada fila representa uno de los relatos y cada columna una palabra única, de modo que cada celda contiene el número de veces que la palabra aparece en el relato. Además de esta vectorización, también se buscará eliminar las stop words, es decir, palabras que se repiten un gran número de veces pero que en realidad no cargan con gran significado.
+\\
+
+Para este trabajo, se utilizará un clasificador Naïve Bayes, un tipo de red bayesiana. Una red bayesiana es un modelo probabilístico gráfico representado por un grafo acíclico dirigido, formalmente definido como $D=(V, E)$, donde cada vértice $v=\{ X_1, ..., X_n\}$ representa una variable aleatoria del problema y las aristas E representan dependencias condicionales entre variables. Esta estructura nos permite expresar la distribución conjunta de las variables de la siguiente manera:
+\begin{equation*}
+    P(X_1,\ldots ,X_n)=\prod_{i=1}^n P(X_i|Padres(X_i))
+\end{equation*}
+
+Como se mencionó, el clasificador Naïve Bayes es un tipo de red bayesiana, donde solamente existe un nodo raíz, que corresponde a la variable a predecir $Y$, mientras que todos los nodos hijos que dependen únicamente de $Y$ corresponden a las características de la observación. En este modelo, se hace la suposición de que todas las características son independientes entre sí, esto para simplificar los cálculos. Gracias a esta configuración, se puede factorizar la distribución general de la siguiente manera:
+\begin{equation*}
+    P(Y,X_1,\ldots ,X_n)=P(Y)\prod_{i=1}^n P(X_i|Y)
+\end{equation*}
+
+Una observación es que en este modelo, el nodo padre (o el que corresponde a la variable a predecir) siempre es una variable categórica, mientras que los nodos hijos pueden ser tanto categóricos como cuantitativos. En el caso de que un nodo hijo sea categórico, este se distribuye siguiendo una distribución multinomial, mientras que, en el caso cuantitativo, aunque es común que se asuma que estos nodos tienen distribuciones normales, también es posible tener otros tipos de distribución, tanto paramétricos (por ejemplo una distribución tipo Poisson), como no paramétricos (como estimadores tipo Kernel).
+\\
+
+Con esto y el teorema de Bayes, puede calcularse la probabilidad de que una nueva observación sea igual a cierta categoría de la siguiente manera:
+\begin{equation*}
+    P(Y=k|X=x)=\frac{P(Y=k)f(x|y=k)}
+    {\sum_{k=1}^K P(Y=k)f(x|y=k)}
+\end{equation*}
+
+Para evaluar el clasificador, se utilizará una matriz de confusión y algunas métricas que pueden calcularse con ella. La matriz antes mencionada es un método de visualización para los resultados de un algoritmo clasificador. Usualmente, el cuadro superior izquierdo contiene la cantidad de verdaderos positivos (TP), es decir, la cantidad de predicciones correctas respecto a la categoría positiva. El cuadro inferior izquierdo muestra la cantidad de falsos positivos (FP), o la cantidad de predicciones que fueron catalogadas como positivas cuando no lo eran. El cuadro superior derecho es el número de falsos negativos (FN), que es la cantidad de predicciones que fueron catalogadas erróneamente como negativas. Finalmente, en el cuadro inferior derecho se encuentran la cantidad de negativos verdaderos (TN), que son la cantidad de predicciones en la categoría negativa catalogadas de manera correcta. \\
+
+Con la matriz de confusión, es posible calcular ciertas métricas para evaluar el desempeño del clasificador, entre las que se encuentran:
+\begin{itemize}
+    \item Exactitud (Accuracy): Proporción de resultados verdaderos positivos (TP) más los verdaderos negativos (TN) entre el número total de predicciones. Aunque esta métrica puede no llegar a ser totalmente informativa cuando la proporción de positivos y negativos es muy desigual.
+    \item Precisión (Precision): Proporción de verdaderos positivos (TP) dividido entre todos la suma de los verdaderos positivos más los falsos positivos. En otras palabras, es el porcentaje de casos positivos detectados.
+    \item Sensibilidad (Recall): Proporción de verdaderos negativos (TN) respecto a todas las predicciones hechas de negativos.
+    \item F1-score: Esta métrica es útil porque resume tanto la precisión como la sensibilización de una sola métrica. Se calcula como $\frac{2*Precision*Recall}{Precision+Recall}$.
+\end{itemize}
+
+Sin embargo, todo lo anterior aplica para categorizaciones binarias, es decir, cuando únicamente existen dos clases de la variable objetivo. Y aunque también existen matrices de confusión para variables con múltiples categorías, se decidió que para este estudio se dicotomizarán las predicciones, entrando únicamente en dos categorías: \textit{Haunted Places} y \textit{Other} \\
+
+Para implementar el clasificador como tal se utilizarán dos librerías distintas, una de ellas es e1071, que contiene distintos algoritmos de machine learning. También, se hará uso de la librería \textit{naivebayes}, en la que podemos agregar otros parámetros que no se pueden con la función de la primera librería con el objetivo de ver el cambio en las métricas. Por ejemplo, asumir que las variables cuantitativas no se comportan con una distribución normal, sino más bien con una distribución de Poisson, esto pues es necesario recordar que estamos hablando de frecuencias de palabras. También, existe la opción de agregar un Laplace Smoothing que se explicará a continuación.
+\\
+
+Por último, cabe mencionar que no todas las palabras aparecen en todas las historias, por lo tanto, nuestra matriz obtenida con la vectorización de las historias tendrá múltiples celdas con ceros, lo que puede provocar problemas a la hora de calcular las probabilidades, por ejemplo, si en los datos de entrenamiento en la categoría \textit{Haunted places} no está presente la palabra \textit{magic}, entonces el algoritmo asumirá que si esta palabra está presente en el relato, no hay probabilidad de entrar en esta categoría, lo cual no es verdad. Para resolver este problema, se probará la utilización de la técnica \textit{Laplace Smoothing}, la cual agrega un término de “suavizamiento” a la fórmula para el cálculo de las probabilidades condicionales (Jayaswal, 2020), como se ve en la Ecuación \ref{eq:laplace_smoothing}.
+\begin{equation}
+\label{eq:laplace_smoothing}
+    P(x_i|Y=k)=\frac{N(x_i,Y=k)+\alpha}{N(Y=k)+\alpha p}
+\end{equation}
+
+Aquí, $\alpha$ representa el parámetro parámetro de suavizamiento, $N(x_i, Y=k)$ el número de observaciones que contienen la palabra $x_i$ y están en la categoría $k$. Mientras que $N(Y=k)$ corresponde al número total de observaciones tal que su variable objetivo es igual a $k$ y $p$ corresponde al número de variables. Con esto, se logra eliminar las probabilidades iguales a cero; sin embargo, es necesario establecer un parámetro $\alpha$ para determinar qué tanto suavizamiento se realizará, por lo que se harán múltiples pruebas usando distintos valores para este parámetro y se utilizará aquel que arroje mejores resultados.
+
 \section*{Aplicación}
 
 El clasificador Naïve Bayes a ser generado consta de un nodo raíz, el cual representa las posibles categorías del relato a clasificar. Para determinar las categorías, se decidió escoger un género, entre los presentados por la página de “Your Ghost Story”, dado que este sea el que tiene una mayor cantidad de relatos entre aquellos que fueron recopilados. Esto resultó en el género de \textit{Haunted Places}, el cual contiene $902$ relatos dentro del conjunto de datos. Con ello, cada relato se buscará clasificar entre \textit{Haunted Places} y \textit{Non Haunted Places}.
