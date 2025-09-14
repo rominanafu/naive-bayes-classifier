@@ -30,7 +30,13 @@
 
 \section*{Aplicación}
 
-El primer clasificador Naïve Bayes se entrenó con la librería e1071. Sin especificar algún parámetro, el modelo clasificó a las $902$ observaciones del conjunto de prueba como \textit{Haunted Places}, con lo cual se genera la matriz de confusión de la Tabla \ref{cm:modelo1}.
+El clasificador Naïve Bayes a ser generado consta de un nodo raíz, el cual representa las posibles categorías del relato a clasificar. Para determinar las categorías, se decidió escoger un género, entre los presentados por la página de “Your Ghost Story”, dado que este sea el que tiene una mayor cantidad de relatos entre aquellos que fueron recopilados. Esto resultó en el género de \textit{Haunted Places}, el cual contiene $902$ relatos dentro del conjunto de datos. Con ello, cada relato se buscará clasificar entre \textit{Haunted Places} y \textit{Non Haunted Places}.
+\\
+
+Posteriormente, las características que dependen de la clasificación del relato son aquellas como las emociones de la narrativa, la frecuencia en uso de palabras, y el lugar en donde se escribió. Como estas dependen de la clasificación, se da un arco de la clasificación a cada características, y estas se suponen independientes entre sí. Con este grafo en mente, se ajustarán los respectivos clasificadores, como descrito en la sección anterior.
+\\
+
+El primer clasificador Naïve Bayes se entrenó con la librería e1071. Sin especificar algún parámetro, el modelo clasificó a las $902$ observaciones del conjunto de prueba como \textit{Haunted Places}, con lo cual se generó la matriz de confusión de la Tabla \ref{cm:modelo1}.
 \\
 
 A partir de esta matriz de confusión, el modelo se mide en las 4 métricas establecidas en la metodología. Se tiene un accuracy de $0.3027$, una precisión de $0.3027$, un recall de $1$, y un F1-score de $0.4647$. El accuracy que menos de la mitad de las predicciones son correctamente clasificadas, la precisión muestra que solo el $30.27\%$ de las predicciones de \textit{Haunted Places} fueron verdaderamente de dicha categoría, aunque el recall indica que todos los relatos de \textit{Haunted Places} fueron clasificados correctamente. El F1-score, que combina tanto a la precisión como al recall, indica que el modelo tiene un rendimiento como del $46.47\%$, que indica que se tiene una precisión y recall media. Con estas métricas, se puede esperar que el modelo siempre clasifique correctamente los relatos de \textit{Haunted Places}, pero que clasifique erróneamente a todos los relatos que no son de este género.
