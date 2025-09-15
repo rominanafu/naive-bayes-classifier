@@ -26,20 +26,34 @@
 
 El internet alberga millones de relatos personales sobre experiencias paranormales, los cuales ofrecen una rica fuente de datos sobre percepciones individuales y creencias colectivas. Este artículo busca aplicar técnicas de Procesamiento de Lenguaje Natural (NLP) para categorizar estas narrativas, utilizando un clasificador Naïve Bayes para diferenciar los relatos del género "Haunted Places" del resto. La metodología consistió en la extracción de datos mediante web scraping del sitio "Your Ghost Story", la transformación del texto a una representación numérica (count vectorizer) y el entrenamiento de cuatro modelos Naïve Bayes distintos. Los resultados muestran que los modelos iniciales fueron ineficaces, clasificando todas las observaciones en una sola categoría. Sin embargo, al ajustar el modelo para asumir una distribución de Poisson en las frecuencias de palabras y aplicar un suavizado de Laplace (con $\alpha=1$), se obtuvo el mejor rendimiento, alcanzando una exactitud del $73.39\%$ y un F1-score de $0.6116$. Se concluye que un clasificador Naïve Bayes, debidamente ajustado a las características de los datos textuales, es una herramienta eficaz para categorizar este tipo de narrativas no convencionales.
 \\
+
+\textbf{Palabras clave:} Clasificador Naïve Bayes, procesamiento de lenguaje natural (NLP), web scraping, relatos paranormales, matriz de confusión, suavizado de Laplace.
+
 \section*{Introducción}
 
 El internet se ha convertido en un espacio para millones de personas que comparten experiencias personales relacionadas con lo paranormal, como avistamientos de ovnis, encuentros de fantasmas, entre otros. Estos testimonios, aparte del carácter anecdótico, representan fuentes con amplias descripciones textuales contenientes de la percepción individual y creencias colectivas de lo inexplicable. En estos casos, la variedad de fenómenos reportados y ambigüedad del lenguaje dificultan la clasificación sistemática de estos relatos.
-En el ámbito del análisis de texto y procesamiento de lenguaje natural (NLP), uno de los enfoques utilizados para categorizar los documentos es el clasificador Naïve Bayes, un modelo probabilístico basado en el teorema de Bayes y en la suposición de independencia entre características. \\
-El clasificador Naïve Bayes ha probado ser eficaz en el ámbito de la minería de texto, como han evidenciado diferentes estudios. Por ejemplo, gracias a su habilidad para identificar patrones en el uso de palabras, se ha empleado extensamente en la detección de correos electrónicos no deseados (filtrado de spam). Además, se ha utilizado en análisis de sentimientos, lo cual posibilita diferenciar la polaridad de los puntos de vista en las reseñas de productos o en las redes sociales. Más recientemente, se ha ampliado su uso a la clasificación automática de noticias, la organización de grandes cantidades de datos en foros digitales y la categorización de documentos médicos. \\
+\\
+
+En el ámbito del análisis de texto y procesamiento de lenguaje natural (NLP), uno de los enfoques utilizados para categorizar los documentos es el clasificador Naïve Bayes, un modelo probabilístico basado en el teorema de Bayes y en la suposición de independencia entre características.
+\\
+
+El clasificador Naïve Bayes ha probado ser eficaz en el ámbito de la minería de texto, como han evidenciado diferentes estudios. Por ejemplo, gracias a su habilidad para identificar patrones en el uso de palabras, se ha empleado extensamente en la detección de correos electrónicos no deseados (filtrado de spam). Además, se ha utilizado en análisis de sentimientos, lo cual posibilita diferenciar la polaridad de los puntos de vista en las reseñas de productos o en las redes sociales. Más recientemente, se ha ampliado su uso a la clasificación automática de noticias, la organización de grandes cantidades de datos en foros digitales y la categorización de documentos médicos.
+\\
+
 El modelo Naïve Bayes, a pesar de su simplicidad, presenta resultados competitivos en comparación con algoritmos más sofisticados, particularmente cuando los datos textuales tienen una dimensionalidad elevada. No obstante, en el ámbito de los relatos paranormales, la bibliografía académica es limitada: no hay investigaciones sistemáticas que intenten categorizar este tipo de narraciones. Esto brinda la oportunidad de indagar cómo se pueden implementar las técnicas tradicionales de NLP en un campo escasamente estudiado y con un componente cultural importante.
-Este trabajo busca aprovechar este método en la categorización de relatos recopilados a través de web scraping  en la página "Your Ghost Story". \\
+\\
+
+Este trabajo busca aprovechar este método en la categorización de relatos recopilados a través de web scraping  en la página "Your Ghost Story".
 
 \section*{Metodología}
 
-Dado que el texto no es directamente interpretable por los algoritmos a utilizar, se requiere transformarlo en una representación numérica. Para esto, se utilizará un proceso conocido como count vectorizer, que genera una matriz de frecuencia de términos, donde cada fila representa uno de los relatos y cada columna una palabra única, de modo que cada celda contiene el número de veces que la palabra aparece en el relato. Además de esta vectorización, también se buscará eliminar las stop words, es decir, palabras que se repiten un gran número de veces pero que en realidad no cargan con gran significado.
+El web scraping es la técnica de extraer datos de sitios web de manera automatizada, simulando la navegación de un usuario pero procesando el contenido de forma automática.  Utilizando esta técnica, se generarán HTTP request con el método GET para obtener las páginas. A partir de ello, la labor se dirigirá a encontrar qué etiquetas html estaban asociadas con la información relacionada al título, a la clasificación de la historia, al lugar en donde la historia se publicó, y a la historia en sí. Para eficientar el tiempo de recopilación de los relatos, se realizará una paralelización de las peticiones. Con la información obtenida, se generará una base de datos para su posterior uso.
 \\
 
-Para este trabajo, se utilizará un clasificador Naïve Bayes, un tipo de red bayesiana. Una red bayesiana es un modelo probabilístico gráfico representado por un grafo acíclico dirigido, formalmente definido como $D=(V, E)$, donde cada vértice $v=\{ X_1, ..., X_n\}$ representa una variable aleatoria del problema y las aristas E representan dependencias condicionales entre variables. Esta estructura nos permite expresar la distribución conjunta de las variables de la siguiente manera:
+Dado que el texto no es directamente interpretable por los algoritmos a utilizar, se requiere transformarlo en una representación numérica. Para esto, se utilizará un proceso conocido como count vectorizer, que genera una matriz de frecuencia de términos, donde cada fila representa uno de los relatos y cada columna una palabra única, de modo que cada celda contiene el número de veces que la palabra aparece en el relato. Además de esta vectorización, también se buscará eliminar las stop words, es decir, palabras que se repiten un gran número de veces pero que en realidad no cargan con gran significado. \cite{ibm2023}
+\\
+
+Para este trabajo, se utilizará un clasificador Naïve Bayes, un tipo de red bayesiana. Una red bayesiana es un modelo probabilístico gráfico representado por un grafo acíclico dirigido, formalmente definido como $D=(V, E)$, donde cada vértice $v=\{ X_1, ..., X_n\}$ representa una variable aleatoria del problema y las aristas E representan dependencias condicionales entre variables. Esta estructura nos permite expresar la distribución conjunta de las variables de la siguiente manera:\cite{bhattarai2025}
 \begin{equation*}
     P(X_1,\ldots ,X_n)=\prod_{i=1}^n P(X_i|Padres(X_i))
 \end{equation*}
@@ -58,7 +72,7 @@ Con esto y el teorema de Bayes, puede calcularse la probabilidad de que una nuev
     {\sum_{k=1}^K P(Y=k)f(x|y=k)}
 \end{equation*}
 
-Para evaluar el clasificador, se utilizará una matriz de confusión y algunas métricas que pueden calcularse con ella. La matriz antes mencionada es un método de visualización para los resultados de un algoritmo clasificador. Usualmente, el cuadro superior izquierdo contiene la cantidad de verdaderos positivos (TP), es decir, la cantidad de predicciones correctas respecto a la categoría positiva. El cuadro inferior izquierdo muestra la cantidad de falsos positivos (FP), o la cantidad de predicciones que fueron catalogadas como positivas cuando no lo eran. El cuadro superior derecho es el número de falsos negativos (FN), que es la cantidad de predicciones que fueron catalogadas erróneamente como negativas. Finalmente, en el cuadro inferior derecho se encuentran la cantidad de negativos verdaderos (TN), que son la cantidad de predicciones en la categoría negativa catalogadas de manera correcta. \\
+Para evaluar el clasificador, se utilizará una matriz de confusión y algunas métricas que pueden calcularse con ella. La matriz antes mencionada es un método de visualización para los resultados de un algoritmo clasificador. Usualmente, el cuadro superior izquierdo contiene la cantidad de verdaderos positivos (TP), es decir, la cantidad de predicciones correctas respecto a la categoría positiva. El cuadro inferior izquierdo muestra la cantidad de falsos positivos (FP), o la cantidad de predicciones que fueron catalogadas como positivas cuando no lo eran. El cuadro superior derecho es el número de falsos negativos (FN), que es la cantidad de predicciones que fueron catalogadas erróneamente como negativas. Finalmente, en el cuadro inferior derecho se encuentran la cantidad de negativos verdaderos (TN), que son la cantidad de predicciones en la categoría negativa catalogadas de manera correcta. \\ \cite{murel2024}
 
 Con la matriz de confusión, es posible calcular ciertas métricas para evaluar el desempeño del clasificador, entre las que se encuentran:
 \begin{itemize}
@@ -73,7 +87,7 @@ Sin embargo, todo lo anterior aplica para categorizaciones binarias, es decir, c
 Para implementar el clasificador como tal se utilizarán dos librerías distintas, una de ellas es e1071, que contiene distintos algoritmos de machine learning. También, se hará uso de la librería \textit{naivebayes}, en la que podemos agregar otros parámetros que no se pueden con la función de la primera librería con el objetivo de ver el cambio en las métricas. Por ejemplo, asumir que las variables cuantitativas no se comportan con una distribución normal, sino más bien con una distribución de Poisson, esto pues es necesario recordar que estamos hablando de frecuencias de palabras. También, existe la opción de agregar un Laplace Smoothing que se explicará a continuación.
 \\
 
-Por último, cabe mencionar que no todas las palabras aparecen en todas las historias, por lo tanto, nuestra matriz obtenida con la vectorización de las historias tendrá múltiples celdas con ceros, lo que puede provocar problemas a la hora de calcular las probabilidades, por ejemplo, si en los datos de entrenamiento en la categoría \textit{Haunted places} no está presente la palabra \textit{magic}, entonces el algoritmo asumirá que si esta palabra está presente en el relato, no hay probabilidad de entrar en esta categoría, lo cual no es verdad. Para resolver este problema, se probará la utilización de la técnica \textit{Laplace Smoothing}, la cual agrega un término de “suavizamiento” a la fórmula para el cálculo de las probabilidades condicionales (Jayaswal, 2020), como se ve en la Ecuación \ref{eq:laplace_smoothing}.
+Por último, cabe mencionar que no todas las palabras aparecen en todas las historias, por lo tanto, nuestra matriz obtenida con la vectorización de las historias tendrá múltiples celdas con ceros, lo que puede provocar problemas a la hora de calcular las probabilidades, por ejemplo, si en los datos de entrenamiento en la categoría \textit{Haunted places} no está presente la palabra \textit{magic}, entonces el algoritmo asumirá que si esta palabra está presente en el relato, no hay probabilidad de entrar en esta categoría, lo cual no es verdad. Para resolver este problema, se probará la utilización de la técnica \textit{Laplace Smoothing}, la cual agrega un término de “suavizamiento” a la fórmula para el cálculo de las probabilidades condicionales \cite{jayaswal2020}, como se ve en la Ecuación \ref{eq:laplace_smoothing}.
 \begin{equation}
 \label{eq:laplace_smoothing}
     P(x_i|Y=k)=\frac{N(x_i,Y=k)+\alpha}{N(Y=k)+\alpha p}
@@ -82,6 +96,9 @@ Por último, cabe mencionar que no todas las palabras aparecen en todas las hist
 Aquí, $\alpha$ representa el parámetro parámetro de suavizamiento, $N(x_i, Y=k)$ el número de observaciones que contienen la palabra $x_i$ y están en la categoría $k$. Mientras que $N(Y=k)$ corresponde al número total de observaciones tal que su variable objetivo es igual a $k$ y $p$ corresponde al número de variables. Con esto, se logra eliminar las probabilidades iguales a cero; sin embargo, es necesario establecer un parámetro $\alpha$ para determinar qué tanto suavizamiento se realizará, por lo que se harán múltiples pruebas usando distintos valores para este parámetro y se utilizará aquel que arroje mejores resultados.
 
 \section*{Aplicación}
+
+Para la parte del web scraping, se parte de una función simple para la extracción de la información usando el protocolo HTTP GET. Con ello, se dividió la información en base a las etiquetas html previamente definidas (siendo estas el título, el lugar de publicación, el tipo de historia y el relato). De las 28500 llamadas lanzadas a la página, 3007 historias fueron obtenidas, las cuales sirven como base para los posteriores clasificadores.
+\\
 
 El clasificador Naïve Bayes a ser generado consta de un nodo raíz, el cual representa las posibles categorías del relato a clasificar. Para determinar las categorías, se decidió escoger un género, entre los presentados por la página de “Your Ghost Story”, dado que este sea el que tiene una mayor cantidad de relatos entre aquellos que fueron recopilados. Esto resultó en el género de \textit{Haunted Places}, el cual contiene $902$ relatos dentro del conjunto de datos. Con ello, cada relato se buscará clasificar entre \textit{Haunted Places} y \textit{Non Haunted Places}.
 \\
@@ -248,6 +265,7 @@ En este artículo, esto se evidenció claramente. Los primeros modelos mostraron
 \\
 
 La revisión constante de los resultados y la naturaleza de los datos es tan relevante como el modelo mismo.
+
 %% Referencias
 \printbibliography[title={Referencias}]
 
